@@ -45,7 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     admin-compliant permissions.
     Username and password are required. Other fields are optional.
     """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4(), blank=False, null=False, unique=True)
+    uuid = models.UUIDField(default=uuid.uuid4(), blank=False, null=False, unique=True)
 
     username_validator = ASCIIUsernameValidator()
     username = models.CharField(
@@ -62,7 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     display_name = models.CharField(_('display name'), max_length=30, blank=False, null=False, default='New User')
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
-    email = models.EmailField(_('email address'), blank=False, null=False)
+    email = models.EmailField(_('email address'), blank=False, null=False, unique=True)
 
     profile = models.TextField(_('profile'), max_length=240, blank=True)
 
@@ -90,7 +90,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
-        #abstract = True # ここを削除しないといけないことを忘れない！！！！！！！！！！
 
     def clean(self):
         super().clean()
