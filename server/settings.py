@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
-    'account',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -107,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_USE_JWT = True # new
 REST_SESSION_LOGIN = True
 
-AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'user.User'
 
 REST_FRAMEWORK = { 
     'DEFAULT_PERMISSION_CLASSES': (
