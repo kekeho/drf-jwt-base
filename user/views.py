@@ -24,7 +24,7 @@ class UserRegister(generics.CreateAPIView):
 
 # Get authenticated user info (GET)
 class AuthUserInfo(generics.RetrieveAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -46,7 +46,7 @@ class AuthUserInfo(generics.RetrieveAPIView):
 
 # Update user info (PATCH)
 class AuthUserUpdate(generics.UpdateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -55,5 +55,20 @@ class AuthUserUpdate(generics.UpdateAPIView):
             instance = self.queryset.get(id=self.request.user.id)
             return instance
         
+        except User.DoesNotExist:
+            raise Http404
+
+
+
+# Delete user (DELETE)
+class AuthUserDelete(generics.DestroyAPIView):
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+    def get_object(self):
+        try:
+            instance = self.queryset.get(id=self.request.user.id)
+            return instance
         except User.DoesNotExist:
             raise Http404
