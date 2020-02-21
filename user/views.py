@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, Http404
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import status
@@ -21,6 +21,7 @@ class UserRegister(generics.CreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 # Get authenticated user info (GET)
 class AuthUserInfo(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -42,3 +43,17 @@ class AuthUserInfo(generics.RetrieveAPIView):
             status=status.HTTP_200_OK
         )
 
+
+# Update user info (PATCH)
+class AuthUserUpdate(generics.UpdateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        try:
+            instance = self.queryset.get(id=self.request.user.id)
+            return instance
+        
+        except User.DoesNotExist:
+            raise Http404

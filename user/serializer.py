@@ -13,3 +13,15 @@ class UserSerializer(serializers.ModelSerializer):
     
     def create(self, validation_data):
         return User.objects.create_user(**validation_data)
+
+    def update(self, instance, validation_data):
+        print(instance)
+        print(validation_data)
+        if 'password' in validation_data:
+            instance.set_password(validation_data['password'])
+            validation_data.pop('password')
+
+        instance = super().update(instance, validation_data)
+
+        instance.save()
+        return instance
