@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.contrib.auth.validators import UnicodeUsernameValidator, ASCIIUsernameValidator
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.core.mail import send_mail
 from django.contrib.auth.base_user import BaseUserManager
+import uuid
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -44,21 +45,27 @@ class User(AbstractBaseUser, PermissionsMixin):
     admin-compliant permissions.
     Username and password are required. Other fields are optional.
     """
-    username_validator = UnicodeUsernameValidator()
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4(), blank=False, null=False, unique=True)
 
+    username_validator = ASCIIUsernameValidator()
     username = models.CharField(
         _('username'),
-        max_length=150,
+        max_length=30,
         unique=True,
-        help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+        help_text=_('Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.'),
         validators=[username_validator],
         error_messages={
             'unique': _("A user with that username already exists."),
         },
     )
+
+    display_name = models.CharField(_('display name'), max_length=30, blank=False, null=False, default='New User')
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
-    email = models.EmailField(_('email address'), blank=True)
+    email = models.EmailField(_('email address'), blank=False, null=False)
+
+    profile = models.TextField(_('profile'), max_length=240, blank=True)
+
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
