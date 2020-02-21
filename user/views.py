@@ -7,7 +7,7 @@ from django.db import transaction
 from .models import User
 from .serializer import UserSerializer
 
-# REGIST USER (POST)
+# Regist user (POST)
 class UserRegister(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
     queryset = User.objects.all()
@@ -20,4 +20,25 @@ class UserRegister(generics.CreateAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Get authenticated user info (GET)
+class AuthUserInfo(generics.RetrieveAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request, format=None):
+        return Response(
+            data={
+                'username': request.user.username,
+                'email': request.user.email,
+
+                'display_name': request.user.display_name,
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+
+                'profile': request.user.profile,
+            },
+            status=status.HTTP_200_OK
+        )
 
